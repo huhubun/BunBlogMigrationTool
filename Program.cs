@@ -3,11 +3,12 @@ using Npgsql;
 using System.Net;
 using System.Runtime.CompilerServices;
 
-var postgreSqlConnectionString = "Host=localhost;Username=YOUR_USERNAME;Password=YOUR_PASSWORD;Database=YOUR_DB_NAME";
-using var postgreSqlDataSource = NpgsqlDataSource.Create(postgreSqlConnectionString);
+const string SQLITE_CONNECTION_STRING = "Data Source=YOUR_SQLITE_DB_PATH";
+const string PGSQL_CONNECTION_STRING = "Host=localhost;Username=YOUR_USERNAME;Password=YOUR_PASSWORD;Database=YOUR_DB_NAME";
+
+using var postgreSqlDataSource = NpgsqlDataSource.Create(PGSQL_CONNECTION_STRING);
 
 var postTags = new List<KeyValuePair<int, string>>();
-
 using (var cmd = postgreSqlDataSource.CreateCommand(@"
     select pt.""PostId"", t.""DisplayName""
     from public.""Tag"" as t
@@ -37,7 +38,7 @@ using (var reader = await cmd.ExecuteReaderAsync())
         var linkName = reader.GetString(4);
         var publishedOn = reader.GetDateTime(5);
 
-        using var connection = new SqliteConnection("Data Source=c:\\bammemo\\bammemo.db");
+        using var connection = new SqliteConnection(SQLITE_CONNECTION_STRING);
         connection.Open();
 
         var insertSlipCommand = connection.CreateCommand();
@@ -68,7 +69,7 @@ using (var reader = await cmd.ExecuteReaderAsync())
     }
 }
 
-using (var connection = new SqliteConnection("Data Source=c:\\bammemo\\bammemo.db"))
+using (var connection = new SqliteConnection(SQLITE_CONNECTION_STRING))
 {
     connection.Open();
 
